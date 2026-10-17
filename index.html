@@ -4,7 +4,35 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#FFF9F5">
+
 <title>她给你留了一份问卷</title>
+<meta name="description" content="她已经答完了全部24道题。你也答一遍，才知道合不合适。24题·约5分钟·答完即出报告。">
+<meta name="keywords" content="问卷,测试,契合度,报告,性格">
+
+<!-- ===== Open Graph（QQ / 微信卡片核心） ===== -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NO.01 未拆封">
+<meta property="og:title" content="她给你留了一份问卷">
+<meta property="og:description" content="她已经答完了全部24道题。你也答一遍，才知道合不合适。">
+<meta property="og:image" content="https://zzs1314521.github.io/666/img/share.png">
+<meta property="og:image:secure_url" content="https://zzs1314521.github.io/666/img/share.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:url" content="https://zzs1314521.github.io/666/">
+<meta property="og:locale" content="zh_CN">
+
+<!-- ===== QQ 老版本兜底 ===== -->
+<meta itemprop="name" content="她给你留了一份问卷">
+<meta itemprop="description" content="她已经答完了全部24道题。你也答一遍，才知道合不合适。">
+<meta itemprop="image" content="https://zzs1314521.github.io/666/img/share.png">
+
+<!-- ===== 微信 / 通用大图卡 ===== -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="她给你留了一份问卷">
+<meta name="twitter:description" content="她已经答完了全部24道题。你也答一遍，才知道合不合适。">
+<meta name="twitter:image" content="https://zzs1314521.github.io/666/img/share.png">
+
 <style>
 /* ============ tokens ============ */
 :root{
@@ -79,6 +107,14 @@ img{max-width:100%}
   background:#fff;font-size:16px;font-family:inherit;color:var(--ink);outline:none;transition:.18s;
 }
 .input:focus{border-color:var(--rose)}
+.sel{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  background:#fff;padding-right:40px;cursor:pointer;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238C8279' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;
+}
+.sel:invalid,.sel option[value=""]{color:#BCB1A9}
+.sel option{color:var(--ink)}
 
 /* ============ quiz ============ */
 .qtop{display:flex;align-items:center;gap:12px;margin-bottom:22px}
@@ -291,6 +327,47 @@ img{max-width:100%}
       <label for="in-birth">你的生日</label>
       <input class="input" id="in-birth" type="date" style="color:var(--ink)">
     </div>
+    <div class="field">
+      <label for="in-region">你在哪个地区</label>
+      <select class="input sel" id="in-region">
+        <option value="">请选择</option>
+        <option>北京</option>
+        <option>天津</option>
+        <option>河北</option>
+        <option>山西</option>
+        <option>内蒙古</option>
+        <option>辽宁</option>
+        <option>吉林</option>
+        <option>黑龙江</option>
+        <option>上海</option>
+        <option>江苏</option>
+        <option>浙江</option>
+        <option>安徽</option>
+        <option>福建</option>
+        <option>江西</option>
+        <option>山东</option>
+        <option>河南</option>
+        <option>湖北</option>
+        <option>湖南</option>
+        <option>广东</option>
+        <option>广西</option>
+        <option>海南</option>
+        <option>重庆</option>
+        <option>四川</option>
+        <option>贵州</option>
+        <option>云南</option>
+        <option>西藏</option>
+        <option>陕西</option>
+        <option>甘肃</option>
+        <option>青海</option>
+        <option>宁夏</option>
+        <option>新疆</option>
+        <option>香港</option>
+        <option>澳门</option>
+        <option>台湾</option>
+        <option>海外</option>
+      </select>
+    </div>
     <div class="grow"></div>
     <button class="btn" id="btn-profile">开始答题</button>
   </section>
@@ -314,17 +391,17 @@ img{max-width:100%}
   <div class="sheet" id="sheet">
     <h3 id="modalTitle">最后一步</h3>
     <p class="hint" style="text-align:left;margin:6px 0 16px">
-      转完 ¥<span id="modalPrice">3.9</span>，她会马上把口令发你。整个过程 30 秒。
+      微信扫码付款完 ¥<span id="modalPrice">3.9</span>，她会收到口令，口令两人共同可用
     </p>
 
     <div class="steps" aria-hidden="true">
-      <div class="step"><b>1</b>扫码转账</div>
-      <div class="step"><b>2</b>收到她的口令</div>
+      <div class="step"><b>1</b>微信扫码赞赏</div>
+      <div class="step"><b>2</b>她收到口令发给你</div>
       <div class="step"><b>3</b>输进来解锁</div>
     </div>
 
     <div class="qr" id="qrBox"></div>
-    <p class="hint" style="margin:0 0 14px">口令是她亲手发的，别问别人</p>
+    <p class="hint" style="margin:0 0 14px">口令是直接发到女方用户的</p>
 
     <label for="passInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">口令</label>
     <input class="input" id="passInput" placeholder="输入她发给你的口令"
@@ -346,13 +423,14 @@ img{max-width:100%}
 const CONFIG = {
   girlName: "她",
   herBirth: "2001-03-14",
+  herRegion: "河南",
   herMbti:  "INFJ",
   herMessage:
 "其实这份问卷我改了三遍。\n有些题选完又划掉，因为怕选得太明显。\n\n如果你看到这里，说明你真的答完了。\n那……我们聊聊看吧。",
   price: "3.9",
   photos: ["img/tp1.png", "img/tp2.png"],   /* 相对路径 */
   qrImage: "img/zsm.png",        /* 赞赏码 */
-  passphrase: "在吗",  /* 她发给他的口令，不区分大小写和空格 */
+  passphrase: "ling",  /* 她发给他的口令，不区分大小写和空格 */
   passphraseHash: "", /* 可选：填 hashStr("口令") 的结果，然后把 passphrase 置空 */
 };
 
@@ -595,6 +673,16 @@ function signOf(month, day){
   if (!hit) hit = ZODIAC_CUTS[0];
   return {name:hit[2], el:hit[3], idx:ZODIAC_ORDER.indexOf(hit[2])};
 }
+function regionLine(){
+  const mine = (S.profile && S.profile.region) ? S.profile.region : '';
+  const hers = CONFIG.herRegion || '—';
+  if (!mine) return '你在 <em>—</em>，她在 <em>' + esc(hers) + '</em>。';
+  if (mine === hers){
+    return '你在 <em>' + esc(mine) + '</em>，她也在 <em>' + esc(hers) + '</em>。<br>同一片地方，见面不用挑日子。';
+  }
+  return '你在 <em>' + esc(mine) + '</em>，她在 <em>' + esc(hers) + '</em>。<br>隔着一段路，但距离从来不是问题。';
+}
+
 function zodiacScore(a, b){
   if (a.el === b.el){
     return {score:90, note:'同属' + a.el + '象，天生同一个频率，很多话不用说透'};
@@ -738,6 +826,7 @@ function conclHTML(r){
       '<div class="row"><div class="k">性格</div><div class="v">' + personLine(r) + '</div></div>' +
       '<div class="row"><div class="k">星座</div><div class="v">你是 <em>' + r.mineSign.name +
         '座</em>，她是 <em>' + r.hers.name + '座</em>。<br>' + r.zo.note + '。</div></div>' +
+      '<div class="row"><div class="k">地区</div><div class="v">' + regionLine() + '</div></div>' +
       '<div class="row"><div class="k">心动</div><div class="v">心动指数 <em>' + r.heart +
         '</em>，磨合难度 <em>' + r.diffLevel + '</em>。</div></div>' +
     '</div>';
@@ -1013,7 +1102,8 @@ function bindResult(r){
       ' / 性格 ' + Math.round(r.personS) +
       ' / 日常 ' + Math.round(r.habitS) +
       '\n我是 ' + r.mineMbti + '，她是 ' + r.herMbti +
-      '\n磨合难度：' + r.diffLevel;
+      '\n磨合难度：' + r.diffLevel +
+      (S.profile && S.profile.region ? '\n我在' + S.profile.region + '，你在' + (CONFIG.herRegion||'') : '');
     if (navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(txt).then(
         function(){ toast('已复制，去发给她吧'); },
@@ -1125,6 +1215,13 @@ function boot(){
 
   if (S.idx >= QUEUE.length){ renderResult(); return; }
 
+  /* 回填已填过的资料，中途退出再进来不用重填 */
+  if (S.profile){
+    if (S.profile.name)   $('#in-name').value   = S.profile.name;
+    if (S.profile.birth)  $('#in-birth').value  = S.profile.birth;
+    if (S.profile.region) $('#in-region').value = S.profile.region;
+  }
+
   const startBtn = $('#btn-start');
   if (S.idx > 0){
     startBtn.textContent = '继续答题';
@@ -1136,11 +1233,13 @@ function boot(){
 
 /* ---- 事件绑定 ---- */
 $('#btn-profile').addEventListener('click', function(){
-  const name  = $('#in-name').value.trim();
-  const birth = $('#in-birth').value;
+  const name   = $('#in-name').value.trim();
+  const birth  = $('#in-birth').value;
+  const region = $('#in-region').value;
   if (!name){ toast('先留个称呼'); return; }
   if (!birth){ toast('生日要填，不然算不了星座'); return; }
-  S.profile = {name:name, birth:birth};
+  if (!region){ toast('选一下你在哪个地区'); return; }
+  S.profile = {name:name, birth:birth, region:region};
   save();
   renderQ();
 });
