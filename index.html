@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FFF9F5">
+<title>她给你留了一份问卷</title>
+<style>
+/* ============ tokens ============ */
+:root{
+  --bg:#FFF9F5; --card:#FFFDFC; --ink:#33302C; --sub:#8C8279;
+  --rose:#D9A0A5; --rose-d:#C4838B; --deep:#2F4F45; --line:#F0E3DB;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+*{-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg);color:var(--ink);font-size:16px;line-height:1.65;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.serif,h1,h2,h3{font-family:"Noto Serif SC","Songti SC",Georgia,serif;font-weight:600}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--rose);outline-offset:2px;border-radius:6px}
+
+/* ============ layout ============ */
+#app{max-width:430px;margin:0 auto;min-height:100dvh;position:relative;overflow-x:hidden}
+.screen{display:none;min-height:100dvh;padding:34px 22px calc(28px + env(safe-area-inset-bottom));flex-direction:column}
+.screen.on{display:flex}
+.grow{flex:1}
+
+/* ============ typography ============ */
+.eyebrow{font-size:12px;letter-spacing:.28em;color:var(--sub);margin:0 0 18px;text-transform:uppercase}
+.title{font-size:34px;line-height:1.32;margin:0 0 18px;letter-spacing:.01em}
+.lead{font-size:15px;color:#6E645C;margin:0 0 20px;line-height:1.85}
+.meta{font-size:12.5px;color:var(--sub);letter-spacing:.06em;margin-bottom:28px}
+.foot{font-size:12px;color:var(--sub);text-align:center;margin:16px 0 0}
+.sec-t{font-size:15px;letter-spacing:.04em;margin:30px 0 14px;color:var(--deep)}
+.hint{font-size:12.5px;color:var(--sub);text-align:center;margin:12px 0 0;line-height:1.7}
+.rule{height:1px;background:var(--line);margin:22px 0;border:0}
+
+/* ============ buttons ============ */
+.btn{
+  appearance:none;border:0;width:100%;padding:16px;border-radius:14px;background:var(--deep);
+  color:#FFF7F3;font-size:16.5px;font-weight:600;letter-spacing:.06em;font-family:inherit;
+  cursor:pointer;box-shadow:0 10px 26px -12px rgba(47,79,69,.75);transition:transform .16s;
+}
+.btn:active{transform:scale(.985)}
+.btn.ghost{background:transparent;color:var(--deep);border:1px solid var(--line);box-shadow:none}
+.btn-cta{position:relative;overflow:hidden}
+.btn-cta::after{
+  content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.26),transparent);
+  animation:sheen 3.4s infinite;
+}
+@keyframes sheen{0%{left:-60%}55%,100%{left:140%}}
+.only-you{font-size:12px;color:var(--sub);text-align:center;margin:14px 0 0;line-height:1.7}
+.soft-exit{
+  display:block;width:100%;background:none;border:0;color:#BCB1A9;font-size:12.5px;
+  margin:6px 0 0;padding:10px;font-family:inherit;cursor:pointer;
+}
+
+/* ============ cover ============ */
+.envelope{
+  width:74px;height:52px;border-radius:6px;border:1.5px solid var(--rose);
+  position:relative;margin:0 0 30px;opacity:.9;
+}
+.envelope::before{
+  content:"";position:absolute;inset:0;clip-path:polygon(0 0,50% 62%,100% 0);
+  background:var(--rose);opacity:.28;
+}
+
+/* ============ profile ============ */
+.field{margin-bottom:22px}
+.field label{display:block;font-size:12.5px;letter-spacing:.1em;color:var(--sub);margin-bottom:10px}
+.input{
+  width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line);
+  background:#fff;font-size:16px;font-family:inherit;color:var(--ink);outline:none;transition:.18s;
+}
+.input:focus{border-color:var(--rose)}
+
+/* ============ quiz ============ */
+.qtop{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.bar{flex:1;height:3px;border-radius:3px;background:#F2E6E0;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--rose);width:0;transition:width .4s ease}
+.qtop span{font-size:11.5px;color:var(--sub);letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.qtag{font-size:12px;letter-spacing:.14em;color:var(--rose);margin:0 0 14px;font-weight:600}
+.qtag.guess{color:var(--rose-d)}
+.q-card{
+  background:var(--card);border-radius:20px;padding:26px 20px;
+  box-shadow:0 20px 44px -26px rgba(140,110,95,.5);border:1px solid var(--line);
+  animation:slide .32s cubic-bezier(.2,.8,.3,1);
+}
+@keyframes slide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.q-text{font-size:21px;line-height:1.55;margin:0 0 22px}
+.opt{
+  display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);
+  border-radius:13px;padding:14px 16px;margin-bottom:9px;font-size:15.5px;color:var(--ink);
+  font-family:inherit;cursor:pointer;transition:.16s;
+}
+.opt:last-child{margin-bottom:0}
+.opt:active:not(:disabled),.opt.sel{background:#FDF2EF;border-color:var(--rose);transform:scale(.995)}
+.opt:disabled{opacity:1;cursor:default}
+.opt.right{background:#EDF5F0;border-color:#8FB8A6}
+.opt.wrong{background:#FBF0F0;border-color:#DDA9AC}
+.quiz-note{font-size:12.5px;color:var(--sub);text-align:center;margin:18px 0 0}
+
+/* ============ result hero ============ */
+.hero{text-align:center;padding:4px 0 10px}
+.hero .cap{font-size:12px;letter-spacing:.24em;color:var(--sub);margin-bottom:16px}
+.ring{
+  width:158px;height:158px;border-radius:50%;margin:0 auto;display:grid;place-items:center;
+  background:conic-gradient(var(--rose) calc(var(--p) * 1%), #F2E6E0 0);
+  transition:background .8s ease;
+}
+.ring-in{width:132px;height:132px;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+.ring b{font-size:46px;line-height:1;font-family:"Noto Serif SC",Georgia,serif;letter-spacing:-.02em}
+.ring b i{font-size:14px;font-style:normal;color:var(--sub);margin-left:2px}
+.hero .name{margin:16px 0 0;font-size:14px;color:#6E645C;letter-spacing:.04em}
+
+/* ============ 结论 ============ */
+.concl{margin:26px 0 0}
+.concl .row{padding:16px 0;border-bottom:1px solid var(--line);display:flex;gap:14px}
+.concl .row:last-child{border-bottom:0}
+.concl .k{font-size:12px;color:var(--rose);letter-spacing:.1em;width:46px;flex:none;padding-top:3px;font-weight:600}
+.concl .v{font-size:14.5px;line-height:1.75;color:#4A443E}
+.concl .v em{font-style:normal;color:var(--deep);font-weight:600;margin-right:4px}
+
+/* ============ 照片 ============ */
+.photo{
+  position:relative;border-radius:18px;overflow:hidden;background:#F3E7E2;
+  aspect-ratio:3/4;border:1px solid var(--line);margin:0 0 10px;
+}
+.photo img{width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block}
+.mosaic{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(8,1fr)}
+.tile{
+  backdrop-filter:blur(15px) saturate(1.12);-webkit-backdrop-filter:blur(15px) saturate(1.12);
+  background:rgba(255,247,243,.32);transition:opacity .6s ease;
+}
+.tile.on{opacity:0}
+@supports not ((backdrop-filter:blur(4px)) or (-webkit-backdrop-filter:blur(4px))){
+  .tile{background:rgba(247,233,228,.95)}
+}
+.photo-cap{font-size:12px;color:var(--sub);text-align:center;margin:0 0 26px}
+
+/* ============ 对照卡 ============ */
+.cmp{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px 12px;margin-bottom:12px}
+.cmp .q{font-size:14.5px;line-height:1.6;margin:0 0 12px;color:#4A443E}
+.cmp .line{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;padding:5px 0;color:#6E645C}
+.cmp .line b{font-weight:600;color:var(--ink);text-align:right}
+.cmp .line.her b{color:var(--deep)}
+.cmp .tag{display:inline-block;font-size:11px;letter-spacing:.08em;padding:3px 9px;border-radius:20px;margin-top:10px}
+.tag.same{background:#EDF5F0;color:#4C7A64}
+.tag.mid{background:#FCF4E8;color:#9A7A45}
+.tag.diff{background:#FBF0F0;color:#B0707A}
+
+/* ============ 锁定卡 ============ */
+.locked{
+  border:1px dashed var(--rose);border-radius:18px;padding:22px 20px;
+  background:linear-gradient(180deg,#FFF8F5,#FDF1EC);
+  animation:breathe 4.5s ease-in-out infinite;
+}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 0 0 rgba(217,160,165,0)}
+  50%{box-shadow:0 0 0 7px rgba(217,160,165,.09)}
+}
+.lock-tag{font-size:11px;letter-spacing:.2em;color:var(--rose);margin:0 0 10px;font-weight:600}
+.locked h3{margin:0 0 14px;font-size:19px}
+.lock-sub{font-size:12.5px;color:var(--sub);margin:0 0 10px;letter-spacing:.02em}
+.lock-list{list-style:none;padding:0;margin:0 0 20px}
+.lock-list li{font-size:14px;color:#6E645C;padding:6px 0 6px 20px;position:relative;line-height:1.65}
+.lock-list li::before{
+  content:"";position:absolute;left:2px;top:14px;width:7px;height:7px;
+  border-radius:50%;background:var(--rose);opacity:.65;
+}
+.lock-list li b{color:var(--rose);letter-spacing:.1em;font-weight:600}
+.peek{
+  margin:14px 0 18px;position:relative;border-radius:12px;background:#fff;
+  border:1px solid var(--line);padding:14px 16px 20px;overflow:hidden;
+}
+.peek-txt{font-family:"Noto Serif SC",Georgia,serif;font-size:14.5px;color:#4A443E;margin:0 0 9px}
+.peek-blur{
+  font-family:"Noto Serif SC",Georgia,serif;font-size:14.5px;color:#4A443E;
+  margin:0;filter:blur(4.5px);opacity:.7;line-height:1.9;
+  user-select:none;-webkit-user-select:none;pointer-events:none;
+}
+.peek::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:46px;
+  background:linear-gradient(180deg,rgba(255,255,255,0),#fff);
+}
+.prog{height:5px;border-radius:5px;background:#F2E6E0;overflow:hidden;margin:18px 0 7px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,#E8B4B8,#D9A0A5)}
+.prog-cap{font-size:12px;color:var(--sub);margin:0 0 20px;text-align:right}
+.price-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 16px}
+.price{font-family:"Noto Serif SC",Georgia,serif;font-size:36px;line-height:1;color:var(--deep)}
+.price small{font-size:16px;margin-right:1px}
+.price-note{font-size:11.5px;color:var(--sub);text-align:right;line-height:1.65}
+
+/* ============ MBTI ============ */
+.mbti-head{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+.mbti-head .a{font-size:24px;letter-spacing:.06em}
+.mbti-head .vs{font-size:12px;color:var(--sub)}
+.dim{padding:14px 0;border-bottom:1px solid var(--line)}
+.dim:last-child{border-bottom:0}
+.dim .top{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;margin-bottom:5px}
+.dim .top span{color:var(--sub);font-size:12px;letter-spacing:.08em;flex:none}
+.dim .note{font-size:13px;color:#6E645C;line-height:1.75}
+
+/* ============ 建议 / 留言 ============ */
+.advise{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.advise .q{font-size:13.5px;color:#6E645C;margin:0 0 8px;line-height:1.6}
+.advise .a{font-size:14px;line-height:1.8;color:#4A443E;margin:0}
+.letter{
+  background:linear-gradient(180deg,#FFFBF8,#FDF2ED);border:1px solid var(--line);
+  border-radius:18px;padding:26px 22px;font-family:"Noto Serif SC",Georgia,serif;
+  font-size:15.5px;line-height:2.05;color:#45403A;white-space:pre-wrap;
+}
+.letter .sign{margin-top:18px;text-align:right;font-size:13px;color:var(--sub)}
+
+/* ============ modal ============ */
+.modal{position:fixed;inset:0;background:rgba(40,32,28,.44);display:none;align-items:flex-end;justify-content:center;z-index:60}
+.modal.on{display:flex}
+.sheet{
+  background:var(--bg);width:100%;max-width:430px;border-radius:22px 22px 0 0;
+  padding:26px 22px calc(22px + env(safe-area-inset-bottom));
+  animation:up .3s cubic-bezier(.2,.8,.3,1);max-height:92dvh;overflow:auto;
+}
+@keyframes up{from{transform:translateY(36px);opacity:.55}to{transform:none;opacity:1}}
+.sheet h3{margin:0 0 6px;font-size:20px}
+.steps{display:flex;gap:6px;margin:0 0 6px}
+.step{flex:1;text-align:center;font-size:10.5px;color:var(--sub);line-height:1.5}
+.step b{
+  display:block;width:21px;height:21px;line-height:21px;border-radius:50%;
+  background:#F2E6E0;color:var(--deep);margin:0 auto 5px;font-size:11px;font-weight:600;
+}
+.qr{
+  width:190px;height:190px;margin:18px auto 14px;border-radius:14px;background:#fff;
+  border:1px solid var(--line);display:grid;place-items:center;text-align:center;
+  font-size:12.5px;color:var(--sub);line-height:1.8;padding:10px;
+}
+.qr img{width:100%;height:100%;object-fit:contain;border-radius:10px}
+.err{color:#B0707A;font-size:13px;margin:8px 0 0;text-align:center;min-height:20px}
+.shake{animation:shk .38s}
+@keyframes shk{0%,100%{transform:none}20%{transform:translateX(-7px)}45%{transform:translateX(6px)}70%{transform:translateX(-3px)}}
+
+/* ============ toast ============ */
+#toast{
+  position:fixed;left:50%;bottom:38px;transform:translate(-50%,14px);z-index:80;
+  background:rgba(47,79,69,.94);color:#FFF7F3;font-size:13.5px;padding:11px 20px;border-radius:30px;
+  opacity:0;pointer-events:none;transition:.32s;letter-spacing:.03em;max-width:86vw;text-align:center;
+}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ============ 动效降级 ============ */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 封面 -->
+  <section class="screen on" id="s-cover">
+    <div class="envelope"></div>
+    <p class="eyebrow">No.01 / 未拆封</p>
+    <h1 class="title">她给你留了<br>一份问卷</h1>
+    <p class="lead">她已经答完了全部 <span id="coverCount">24</span> 道题。<br>你也答一遍，才知道合不合适。</p>
+    <div class="meta" id="coverMeta">24 题 · 约 5 分钟 · 答完即出报告</div>
+    <div class="grow"></div>
+    <button class="btn" id="btn-start">拆开</button>
+    <p class="foot">中途退出会自动保存进度</p>
+  </section>
+
+  <!-- 基础信息 -->
+  <section class="screen" id="s-profile">
+    <p class="eyebrow">第一步</p>
+    <h1 class="title" style="font-size:27px">先留个底</h1>
+    <p class="lead" style="margin-bottom:28px">你的生日会用来算星座，<br>不填不知道你们配不配。</p>
+    <div class="field">
+      <label for="in-name">怎么称呼你</label>
+      <input class="input" id="in-name" placeholder="你的名字或昵称" maxlength="12" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="in-birth">你的生日</label>
+      <input class="input" id="in-birth" type="date" style="color:var(--ink)">
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="btn-profile">开始答题</button>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div id="quizHead"></div>
+    <div id="quizBody"></div>
+    <p class="quiz-note" id="quizNote"></p>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-result">
+    <div id="resultBody"></div>
+  </section>
+
+</div>
+
+<!-- 解锁弹窗 -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+  <div class="sheet" id="sheet">
+    <h3 id="modalTitle">最后一步</h3>
+    <p class="hint" style="text-align:left;margin:6px 0 16px">
+      转完 ¥<span id="modalPrice">3.9</span>，她会马上把口令发你。整个过程 30 秒。
+    </p>
+
+    <div class="steps" aria-hidden="true">
+      <div class="step"><b>1</b>扫码转账</div>
+      <div class="step"><b>2</b>收到她的口令</div>
+      <div class="step"><b>3</b>输进来解锁</div>
+    </div>
+
+    <div class="qr" id="qrBox"></div>
+    <p class="hint" style="margin:0 0 14px">口令是她亲手发的，别问别人</p>
+
+    <label for="passInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">口令</label>
+    <input class="input" id="passInput" placeholder="输入她发给你的口令"
+           autocomplete="off" autocapitalize="off" spellcheck="false">
+    <p class="err" id="passErr" role="alert"></p>
+
+    <button class="btn btn-cta" id="btn-unlock">解锁</button>
+    <button class="btn ghost" id="btn-close" style="margin-top:10px">先去问问她</button>
+    <p class="only-you" id="spentTip" style="margin-top:16px"></p>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   1. 配置区
+   ========================================================= */
+const CONFIG = {
+  girlName: "她",
+  herBirth: "2001-03-14",
+  herMbti:  "INFJ",
+  herMessage:
+"其实这份问卷我改了三遍。\n有些题选完又划掉，因为怕选得太明显。\n\n如果你看到这里，说明你真的答完了。\n那……我们聊聊看吧。",
+  price: "3.9",
+  photos: ["", ""],   /* base64 或文件名，留空用占位图 */
+  qrImage: "",        /* 收款码，留空显示占位框 */
+  passphrase: "在吗",  /* 她发给他的口令，不区分大小写和空格 */
+  passphraseHash: "", /* 可选：填 hashStr("口令") 的结果，然后把 passphrase 置空 */
+};
+
+/* =========================================================
+   2. 题库 —— her 是她的答案（0 = 第一个选项）
+   ========================================================= */
+CONFIG.compat = [
+  {id:'c1', cat:'view', q:'约会吃饭，你更倾向哪种？',
+   opts:['我来请','轮流来','AA','看情况'], her:1,
+   adv:'钱这块别靠默契。谁付不重要，重要的是两个人都别默默记账——真介意就直接说，比忍着强。'},
+  {id:'c2', cat:'view', q:'恋爱多久适合见家长？',
+   opts:['一个月内','半年左右','一年以上','顺其自然'], her:3,
+   adv:'见家长的节奏差一点没关系，但别让一方觉得在拖。给她一个大概的时间感，比无限期"再看看"更让人安心。'},
+  {id:'c3', cat:'view', q:'对方要去外地发展两年，你怎么想？',
+   opts:['支持，异地也行','希望他留下','一起过去','看感情到哪一步'], her:0,
+   adv:'这件事最好现在就聊一次，不用等真的发生。你怎么看"分开一段时间"，比你以为的更能说明你们能走多远。'},
+  {id:'c4', cat:'view', q:'恋爱后要在社交平台公开吗？',
+   opts:['要，大方公开','不需要','看对方意愿','无所谓'], her:2,
+   adv:'公开与否是边界问题，不是爱多爱少。她选的偏"看对方意愿"，说明她在意被尊重——先问她，比直接发更得分。'},
+
+  {id:'c5', cat:'person', q:'周五晚上，你理想的安排是？',
+   opts:['热闹的聚会','两个人窝着','各自安静待着','出门散步'], her:1,
+   adv:'一个是"一起做点什么"，一个是"一起什么都不做"。这不是矛盾，是得约定好：有些晚上可以不说话。'},
+  {id:'c6', cat:'person', q:'你生气时更需要什么？',
+   opts:['立刻把话说开','先自己待一会','想吃点东西','需要被哄'], her:1,
+   adv:'一个要当场解决，一个要先冷静。约定一个"暂停键"：今晚不聊，明天几点必聊——冷静期就变成了承诺。'},
+  {id:'c7', cat:'person', q:'吵架后谁先低头？',
+   opts:['我先','对方先','谁错谁先','不提了自然好'], her:2,
+   adv:'"谁错谁先"听起来公平，实际最容易僵住。试试改成"谁先缓过来谁先开口"——就不存在输赢了。'},
+  {id:'c8', cat:'person', q:'你更常说「喜欢你」，还是用行动表示？',
+   opts:['说出口','用行动','都要','都不太会'], her:1,
+   adv:'她偏行动派。别逼她说太多，但要学会认得出她的方式——那些她替你记住的小事，就是她的"喜欢你"。'},
+
+  {id:'c9', cat:'habit', q:'凌晨一点，你通常在？',
+   opts:['已经睡了','刷手机','还在工作','看书听歌'], her:0,
+   adv:'作息差得多，聊天节奏就会错位。别拿"你为什么不回我"当问题，先知道对方几点是清醒的。'},
+  {id:'c10',cat:'habit', q:'能接受对方手机里有异性好友的日常聊天吗？',
+   opts:['完全接受','可以，但要让我知道','不太舒服','不行'], her:1,
+   adv:'她要的不是查手机，是"被主动告知"这件事。你主动说一句，胜过她被动发现十次。'},
+  {id:'c11',cat:'habit', q:'周末更想去？',
+   opts:['爬山出门','看展逛街','打游戏宅家','睡到自然醒'], her:2,
+   adv:'一个想往外跑，一个想在家充能。不用每次都凑一起——各自过好周末，见面才有话讲。'},
+  {id:'c12',cat:'habit', q:'你理想的见面频率是？',
+   opts:['尽量每天','一周两三次','一周一次','看忙不忙'], her:1,
+   adv:'见面的量要对齐，不然总有一方在等。先定一个最低频率，忙的时候也不跌破。'},
+];
+
+CONFIG.guess = [
+  {id:'g1', q:'她第一次见你，心里给你的第一印象打了几分？',
+   opts:['60，及格','70，还不错','80，挺好','90，有点心动'], her:2},
+  {id:'g2', q:'她最受不了男生的哪个小毛病？',
+   opts:['回消息很慢','嘴上答应却不做','太自我','不太爱干净'], her:1},
+  {id:'g3', q:'她最期待的第一次正式约会是什么样？',
+   opts:['安静吃饭聊天','一起看场电影','逛展或市集','散步走到很晚'], her:3},
+  {id:'g4', q:'相处下来，她觉得你最像哪一种人？',
+   opts:['挺有意思的','有点闷但很靠谱','温柔得不像话','还得再看看'], her:1},
+];
+
+CONFIG.mbti = [
+  {k:'EI', q:'刚到一场聚会，你会？',     opts:['主动去认识新朋友','等别人来找我说话']},
+  {k:'EI', q:'聊了一整天之后，你？',     opts:['反而更有精神','需要独处回血']},
+  {k:'SN', q:'你更容易被什么吸引？',     opts:['真实具体的细节','未来的可能性']},
+  {k:'SN', q:'要做一个计划时，你？',     opts:['参考过去的经验','先想大方向和蓝图']},
+  {k:'TF', q:'朋友向你倾诉烦恼，你先？', opts:['帮他想办法','先安抚他的情绪']},
+  {k:'TF', q:'做决定时你更看重？',       opts:['逻辑上是否合理','会不会让人难受']},
+  {k:'JP', q:'出门旅行，你通常？',       opts:['行程提前排好','走到哪算哪']},
+  {k:'JP', q:'你的桌面或手机相册？',     opts:['分类清清楚楚','能找到就行']},
+];
+
+/* =========================================================
+   3. 常量
+   ========================================================= */
+const KEY          = 'herq_v1';
+const FIRST_OPEN   = 'herq_first';
+const FREE_COUNT   = 4;      /* 结算页免费展示前几题 */
+const TILES        = 48;     /* 6 × 8 马赛克格 */
+const BONUS_TILES  = 12;     /* 结算时额外赠送揭开格数 */
+const TILES_PER_HIT = 5;     /* 每猜对一题揭开格数 */
+
+const CATNAME = {view:'关于三观', person:'关于性格', habit:'关于日常'};
+
+const DIMS = [
+  {k:'EI', name:'能量来源', p:'外向 E', n:'内向 I'},
+  {k:'SN', name:'接收信息', p:'实感 S', n:'直觉 N'},
+  {k:'TF', name:'做决定',   p:'理性 T', n:'情感 F'},
+  {k:'JP', name:'生活节奏', p:'计划 J', n:'随性 P'},
+];
+
+const DIM_NOTE = {
+  EI:{same:'你们的电量来源一致，热闹或独处不用互相解释。',
+      diff:'一个靠人群充电，一个靠独处回血。约会结束后各留半小时，能少一半摩擦。'},
+  SN:{same:'看世界的方式接近，聊天不容易不在一个频道。',
+      diff:'一个讲细节，一个讲可能性。听懂对方要多点耐心，但也最容易互相打开新视角。'},
+  TF:{same:'判断方式一致，做决定时不会觉得对方冷血或太情绪化。',
+      diff:'一个先讲道理，一个先讲感受。记住：他要的往往不是安慰，她要的往往不是解决方案。'},
+  JP:{same:'节奏接近，日常安排大概率不会互相折磨。',
+      diff:'一个排好行程才安心，一个走到哪算哪才自在。约定好哪些事必须提前说，剩下的随它去。'},
+};
+
+const ZODIAC_CUTS = [
+  [1,20,'摩羯','土'],[2,19,'水瓶','风'],[3,21,'双鱼','水'],[4,20,'白羊','火'],
+  [5,21,'金牛','土'],[6,22,'双子','风'],[7,23,'巨蟹','水'],[8,23,'狮子','火'],
+  [9,23,'处女','土'],[10,24,'天秤','风'],[11,23,'天蝎','水'],[12,22,'射手','火'],
+];
+const ZODIAC_ORDER = ['白羊','金牛','双子','巨蟹','狮子','处女','天秤','天蝎','射手','摩羯','水瓶','双鱼'];
+
+/* =========================================================
+   4. 小工具
+   ========================================================= */
+const $  = sel => document.querySelector(sel);
+const $$ = sel => Array.prototype.slice.call(document.querySelectorAll(sel));
+
+function esc(str){
+  return String(str == null ? '' : str).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+}
+
+/* =========================================================
+   5. 状态
+   ========================================================= */
+function defaultState(){
+  return {
+    profile:null, answers:{}, mbti:{EI:0,SN:0,TF:0,JP:0},
+    idx:0, revealed:[], correct:0, unlocked:false, bonus:false
+  };
+}
+let S = defaultState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    S = Object.assign(defaultState(), saved);
+    if (!S.mbti || typeof S.mbti !== 'object')       S.mbti    = {EI:0,SN:0,TF:0,JP:0};
+    if (!S.answers || typeof S.answers !== 'object') S.answers = {};
+    if (!Array.isArray(S.revealed))                  S.revealed = [];
+  }catch(e){ S = defaultState(); }
+}
+
+/* 计时：从第一次打开问卷开始，不是从打开弹窗开始 */
+function markFirstOpen(){
+  const t = Number(localStorage.getItem(FIRST_OPEN));
+  const now = Date.now();
+  if (!t || (now - t) > 6 * 3600 * 1000){
+    try{ localStorage.setItem(FIRST_OPEN, String(now)); }catch(e){}
+  }
+}
+function elapsedMinutes(){
+  const t = Number(localStorage.getItem(FIRST_OPEN));
+  if (!t) return 1;
+  return Math.max(1, Math.round((Date.now() - t) / 60000));
+}
+
+/* =========================================================
+   6. 队列与派生值
+   ========================================================= */
+let QUEUE = [];
+
+function buildQueue(){
+  const C = CONFIG.compat, G = CONFIG.guess, M = CONFIG.mbti;
+  const block = (arr, from, to) => arr.slice(from, to).map(q => ({t:'compat', q}));
+  QUEUE = [].concat(
+    block(C, 0, 4),
+    [{t:'guess', q:G[0]}],
+    block(C, 4, 8),
+    [{t:'guess', q:G[1]}],
+    block(C, 8, 12),
+    [{t:'guess', q:G[2]}],
+    M.map(q => ({t:'mbti', q})),
+    [{t:'guess', q:G[3]}]
+  );
+}
+
+const lockedQuestions = () => CONFIG.compat.slice(FREE_COUNT);
+const estimateMinutes = () => Math.max(3, Math.round(QUEUE.length / 5));
+function unitPrice(){
+  const n = Math.max(1, lockedQuestions().length);
+  return (parseFloat(CONFIG.price) / n).toFixed(2);
+}
+
+/* =========================================================
+   7. 占位图 / 图片兜底
+   ========================================================= */
+function placeholder(text, w, h){
+  w = w || 600; h = h || 800;
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="#F6DCD8"/><stop offset="1" stop-color="#E5C3B4"/>' +
+    '</linearGradient></defs>' +
+    '<rect width="' + w + '" height="' + h + '" fill="url(#g)"/>' +
+    '<circle cx="' + (w/2) + '" cy="' + (h*0.38) + '" r="' + (w*0.2) + '" fill="#FFF6F1" opacity="0.55"/>' +
+    '<text x="' + (w/2) + '" y="' + (h*0.78) + '" font-size="' + (w*0.062) + '" text-anchor="middle" ' +
+    'fill="#B98579" font-family="sans-serif">' + text + '</text></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+const photoSrc = i => CONFIG.photos[i] || placeholder('她的照片 ' + (i + 1));
+const FALLBACK_SRC = placeholder('照片加载失败');
+
+function attachImgFallback(){
+  $$('img').forEach(function(img){
+    if (img.dataset.fb) return;
+    img.dataset.fb = '1';
+    img.addEventListener('error', function(){ img.src = FALLBACK_SRC; }, {once:true});
+  });
+}
+
+/* =========================================================
+   8. 口令
+   ========================================================= */
+function hashStr(str){
+  let x = 5381;
+  for (let i = 0; i < str.length; i++) x = ((x << 5) + x + str.charCodeAt(i)) >>> 0;
+  return x.toString(36);
+}
+window.hashStr = hashStr;
+
+function normPass(v){ return String(v || '').trim().toLowerCase().replace(/\s+/g, ''); }
+function checkPass(v){
+  const n = normPass(v);
+  if (!n) return false;
+  if (CONFIG.passphraseHash) return hashStr(n) === CONFIG.passphraseHash;
+  return n === normPass(CONFIG.passphrase);
+}
+
+/* =========================================================
+   9. 星座
+   ========================================================= */
+function signOf(month, day){
+  let hit = null;
+  ZODIAC_CUTS.forEach(function(c){
+    if (month > c[0] || (month === c[0] && day >= c[1])) hit = c;
+  });
+  if (!hit) hit = ZODIAC_CUTS[0];
+  return {name:hit[2], el:hit[3], idx:ZODIAC_ORDER.indexOf(hit[2])};
+}
+function zodiacScore(a, b){
+  if (a.el === b.el){
+    return {score:90, note:'同属' + a.el + '象，天生同一个频率，很多话不用说透'};
+  }
+  /* '火' 编码小于 '风'，排序结果是 "火风" */
+  const pair = [a.el, b.el].sort().join('');
+  if (pair === '土水' || pair === '火风'){
+    return {score:85, note:'一个是土一个是水（或风与火），彼此带得动，也补得上对方的缺'};
+  }
+  if (Math.abs(a.idx - b.idx) === 6){
+    return {score:80, note:'对宫关系，张力最大也最上头——要么互补，要么互相点火'};
+  }
+  return {score:65, note:'元素不同频，需要多一点翻译和耐心，但相处久了一样能磨出来'};
+}
+
+/* =========================================================
+   10. 计分
+   ========================================================= */
+const avg = arr => arr.reduce((s, x) => s + x.v, 0) / Math.max(1, arr.length);
+
+function calc(){
+  const cats = {view:[], person:[], habit:[]};
+  CONFIG.compat.forEach(function(q){
+    const mine = S.answers[q.id];
+    const d = Math.abs((mine == null ? 0 : mine) - q.her);
+    const v = d === 0 ? 1 : (d === 1 ? 0.6 : 0);
+    cats[q.cat].push({q:q, v:v, d:d, mine:mine});
+  });
+
+  const mineMbti = DIMS.map(function(dm){
+    return S.mbti[dm.k] >= 0 ? dm.p.slice(-1) : dm.n.slice(-1);
+  }).join('');
+  const herMbti = CONFIG.herMbti;
+
+  let ms = 62;
+  ms += (mineMbti[0] !== herMbti[0]) ? 10 : 3;
+  ms += (mineMbti[1] === herMbti[1]) ? 14 : -4;
+  ms += (mineMbti[2] !== herMbti[2]) ? 8 : 5;
+  ms += (mineMbti[3] === herMbti[3]) ? 12 : -5;
+  const mbtiScore = Math.max(40, Math.min(98, ms));
+
+  const bp = String(CONFIG.herBirth || '2001-03-14').split('-');
+  const hers = signOf(Number(bp[1]), Number(bp[2]));
+  let mineSign = {name:'—', el:'土', idx:0};
+  if (S.profile && S.profile.birth){
+    const p = S.profile.birth.split('-');
+    if (p.length === 3) mineSign = signOf(Number(p[1]), Number(p[2]));
+  }
+  const zo = zodiacScore(mineSign, hers);
+
+  const viewS   = avg(cats.view) * 100;
+  const personS = (avg(cats.person) * 0.6 + mbtiScore / 100 * 0.4) * 100;
+  const habitS  = avg(cats.habit) * 100;
+  const overall = Math.round(viewS*0.4 + personS*0.3 + habitS*0.2 + zo.score*0.1);
+
+  const all = cats.view.concat(cats.person, cats.habit);
+  const conflicts = CONFIG.compat.filter(function(q){
+    return all.some(function(x){ return x.q.id === q.id && x.v === 0; });
+  });
+
+  return {
+    viewS:viewS, personS:personS, habitS:habitS, overall:overall,
+    mineMbti:mineMbti, herMbti:herMbti, mineSign:mineSign, hers:hers, zo:zo,
+    conflicts:conflicts,
+    heart: Math.min(99, 80 + S.correct * 4 + (overall > 85 ? 4 : 0)),
+    diffLevel: conflicts.length >= 4 ? '偏高' : (conflicts.length >= 2 ? '中等' : '很低')
+  };
+}
+
+/* =========================================================
+   11. 马赛克
+   ========================================================= */
+function revealTiles(n){
+  const remain = [];
+  for (let i = 0; i < TILES; i++) if (S.revealed.indexOf(i) < 0) remain.push(i);
+  for (let i = remain.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = remain[i]; remain[i] = remain[j]; remain[j] = t;
+  }
+  S.revealed = S.revealed.concat(remain.slice(0, n));
+}
+function buildMosaic(){
+  const m = document.createElement('div');
+  m.className = 'mosaic';
+  m.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < TILES; i++){
+    const t = document.createElement('i');
+    t.className = 'tile' + (S.revealed.indexOf(i) >= 0 ? ' on' : '');
+    m.appendChild(t);
+  }
+  return m;
+}
+
+/* =========================================================
+   12. 视图碎片
+   ========================================================= */
+function cmpCard(q, mine){
+  const m = (mine == null ? 0 : mine);
+  const d = Math.abs(m - q.her);
+  const cls = d === 0 ? 'same' : (d === 1 ? 'mid' : 'diff');
+  const label = d === 0 ? '完全同频' : (d === 1 ? '差一点' : '需要聊开');
+  return '' +
+    '<div class="cmp">' +
+      '<p class="q">' + esc(q.q) + '</p>' +
+      '<div class="line"><span>你</span><b>' + esc(q.opts[m]) + '</b></div>' +
+      '<div class="line her"><span>她</span><b>' + esc(q.opts[q.her]) + '</b></div>' +
+      '<span class="tag ' + cls + '">' + label + '</span>' +
+    '</div>';
+}
+
+function heroHTML(r, nick){
+  return '' +
+    '<div class="hero">' +
+      '<p class="cap">契合度报告</p>' +
+      '<div class="ring" style="--p:' + r.overall + '">' +
+        '<div class="ring-in"><b>' + r.overall + '<i>%</i></b></div>' +
+      '</div>' +
+      '<p class="name">' + esc(nick) + ' × ' + esc(CONFIG.girlName) + '</p>' +
+    '</div>';
+}
+
+function personLine(r){
+  const maskedHer = r.herMbti[0] + ' █ ' + r.herMbti[2] + ' █';
+  if (S.unlocked){
+    const key = r.mineMbti[1] === r.herMbti[1] ? 'same' : 'diff';
+    return '你是 <em>' + r.mineMbti + '</em>，她是 <em>' + r.herMbti + '</em>。' + DIM_NOTE.SN[key];
+  }
+  return '你是 <em>' + r.mineMbti + '</em>，她是 <em>' + maskedHer +
+    '</em>。<br>她只肯露两个字母，剩下两个在等你。';
+}
+
+function conclHTML(r){
+  const viewTxt = r.viewS >= 80 ? '三观高度同频，很多事你们大概率会想到一块去。'
+    : r.viewS >= 60 ? '大方向上一致，个别地方需要提前说开。'
+    : '分歧比较明显，建议把这些题摊开来聊一次，早聊比晚聊好。';
+
+  return '' +
+    '<div class="concl">' +
+      '<div class="row"><div class="k">三观</div><div class="v">' + viewTxt +
+        '<br>离合度 ' + Math.round(r.viewS) + '，分歧 ' + r.conflicts.length + ' 处。</div></div>' +
+      '<div class="row"><div class="k">性格</div><div class="v">' + personLine(r) + '</div></div>' +
+      '<div class="row"><div class="k">星座</div><div class="v">你是 <em>' + r.mineSign.name +
+        '座</em>，她是 <em>' + r.hers.name + '座</em>。<br>' + r.zo.note + '。</div></div>' +
+      '<div class="row"><div class="k">心动</div><div class="v">心动指数 <em>' + r.heart +
+        '</em>，磨合难度 <em>' + r.diffLevel + '</em>。</div></div>' +
+    '</div>';
+}
+
+function photoHTML(index, caption, withMosaic){
+  return '' +
+    '<div class="photo"' + (withMosaic ? ' id="photoMain"' : '') + '>' +
+      '<img src="' + photoSrc(index) + '" alt="她的照片">' +
+    '</div>' +
+    '<p class="photo-cap">' + esc(caption) + '</p>';
+}
+
+function lockHTML(){
+  const herChars  = CONFIG.herMessage.replace(/\s/g, '').length;
+  const pct       = Math.round(S.revealed.length / TILES * 100);
+  const peekLine  = CONFIG.herMessage.split('\n')[0];
+  const locked    = lockedQuestions();
+  const sample    = locked[0];
+  const diffCount = locked.filter(function(q){ return S.answers[q.id] !== q.her; }).length;
+
+  const diffLine = diffCount > 0
+    ? '剩下 ' + locked.length + ' 题里，有 <b>' + diffCount + '</b> 处你和她的答案不一样'
+    : '剩下 ' + locked.length + ' 题，你和她的答案<b>全对上了</b>';
+
+  return '' +
+    '<div class="locked" id="locked">' +
+      '<p class="lock-tag">还差最后一步</p>' +
+      '<h3>她留了 ' + herChars + ' 个字给你</h3>' +
+
+      '<div class="peek">' +
+        '<p class="peek-txt">' + esc(peekLine) + '</p>' +
+        '<p class="peek-blur">' + esc(CONFIG.herMessage.replace(/\n/g, ' ')) + '</p>' +
+      '</div>' +
+
+      '<p class="lock-sub">还有一些，是你不问就永远不知道的：</p>' +
+      '<ul class="lock-list">' +
+        '<li>「' + esc(sample.q) + '」她选了 <b>' +
+          '█'.repeat(sample.opts[sample.her].length) + '</b></li>' +
+        '<li>她的 MBTI 是 <b>' + CONFIG.herMbti[0] + ' █ ' + CONFIG.herMbti[2] + ' █</b></li>' +
+        '<li>' + diffLine + '</li>' +
+      '</ul>' +
+
+      '<div class="prog"><i style="width:' + pct + '%"></i></div>' +
+      '<p class="prog-cap">已解开 ' + S.revealed.length + ' / ' + TILES + ' 格</p>' +
+
+      '<div class="price-row">' +
+        '<div class="price"><small>¥</small>' + esc(CONFIG.price) + '</div>' +
+        '<div class="price-note">' + locked.length + ' 道题 + 完整照片 + 她的留言<br>' +
+          '平均一题 ¥' + unitPrice() + '</div>' +
+      '</div>' +
+
+      '<button class="btn btn-cta" id="btn-pay">扫码 30 秒 · 看她全部答案</button>' +
+      '<p class="only-you">这份问卷她只做了一份，链接也只发给了你</p>' +
+      '<button class="soft-exit" id="btn-soft">先不解锁，回去再想想</button>' +
+    '</div>';
+}
+
+function unlockedHTML(r){
+  const locked = lockedQuestions();
+  let html = '<div id="unlocked">';
+
+  html += '<div class="sec-t">另外 ' + locked.length + ' 题 · 对照</div>';
+  locked.forEach(function(q){ html += cmpCard(q, S.answers[q.id]); });
+
+  let dimHtml = '';
+  DIMS.forEach(function(dm, i){
+    const myChar  = r.mineMbti[i];
+    const herChar = r.herMbti[i];
+    const note    = DIM_NOTE[dm.k][myChar === herChar ? 'same' : 'diff'];
+    const myLabel  = myChar  === dm.p.slice(-1) ? dm.p : dm.n;
+    const herLabel = herChar === dm.p.slice(-1) ? dm.p : dm.n;
+    dimHtml +=
+      '<div class="dim">' +
+        '<div class="top"><span>' + dm.name + '</span>' +
+        '<div>' + myLabel + ' · ' + herLabel + '</div></div>' +
+        '<div class="note">' + note + '</div>' +
+      '</div>';
+  });
+
+  html +=
+    '<div class="sec-t">你们的 MBTI</div>' +
+    '<div class="cmp">' +
+      '<div class="mbti-head">' +
+        '<span class="a serif">' + r.mineMbti + '</span>' +
+        '<span class="vs">×</span>' +
+        '<span class="a serif">' + r.herMbti + '</span>' +
+      '</div>' + dimHtml +
+    '</div>';
+
+  if (r.conflicts.length){
+    html += '<div class="sec-t">这些地方，建议提前聊开</div>';
+    r.conflicts.forEach(function(q){
+      html += '<div class="advise"><p class="q">' + esc(q.q) + '</p>' +
+        '<p class="a">' + esc(q.adv) + '</p></div>';
+    });
+  } else {
+    html += '<div class="sec-t">磨合建议</div>' +
+      '<div class="advise"><p class="a">十二道题没有硬碰硬的分歧，这在情侣里不多见。' +
+      '剩下的就是别把默契当成理所当然。</p></div>';
+  }
+
+  html += '<div class="sec-t">还有一张</div>' + photoHTML(1, '第 2 张', false);
+
+  html += '<div class="sec-t">她写给你的一句话</div>' +
+    '<div class="letter">' + esc(CONFIG.herMessage) +
+      '<div class="sign">—— ' + esc(CONFIG.girlName) + '</div></div>';
+
+  html += '<hr class="rule">' +
+    '<p class="lead" style="text-align:center">如果觉得合适，就把这份报告发回给她。</p>' +
+    '<button class="btn" id="btn-share">把结果发回去</button>' +
+    '<button class="btn ghost" id="btn-reset" style="margin-top:10px">重新答一遍</button>';
+
+  return html + '</div>';
+}
+
+/* =========================================================
+   13. 页面切换 / 吐司
+   ========================================================= */
+function go(id){
+  $$('.screen').forEach(function(s){ s.classList.remove('on'); });
+  $('#' + id).classList.add('on');
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('on'); }, 2000);
+}
+
+/* =========================================================
+   14. 答题
+   ========================================================= */
+let answerLocked = false;
+
+function renderQ(){
+  const item = QUEUE[S.idx];
+  if (!item) return;
+  const pct = Math.round(S.idx / QUEUE.length * 100);
+
+  $('#quizHead').innerHTML =
+    '<div class="qtop">' +
+      '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + QUEUE.length +
+        '" aria-valuenow="' + S.idx + '" aria-label="答题进度">' +
+        '<i style="width:' + pct + '%"></i></div>' +
+      '<span>' + (S.idx + 1) + ' / ' + QUEUE.length + '</span>' +
+    '</div>';
+
+  let tag;
+  if (item.t === 'guess')     tag = '<p class="qtag guess">猜猜她选了哪个</p>';
+  else if (item.t === 'mbti') tag = '<p class="qtag">凭第一反应，别想太久</p>';
+  else                        tag = '<p class="qtag">' + CATNAME[item.q.cat] + '</p>';
+
+  $('#quizBody').innerHTML = tag +
+    '<div class="q-card"><h2 class="q-text">' + esc(item.q.q) + '</h2>' +
+    '<div class="opts"></div></div>';
+
+  const box = $('#quizBody').querySelector('.opts');
+  item.q.opts.forEach(function(text, i){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'opt';
+    b.textContent = text;
+    b.addEventListener('click', function(){ pick(item, i, box); });
+    box.appendChild(b);
+  });
+
+  $('#quizNote').textContent = item.t === 'guess'
+    ? '猜对一题，她的照片会多亮几格'
+    : '';
+
+  go('s-quiz');
+}
+
+function pick(item, i, box){
+  if (answerLocked) return;
+  answerLocked = true;
+
+  const btns = Array.prototype.slice.call(box.children);
+  btns.forEach(function(b){ b.disabled = true; });
+
+  if (item.t === 'compat'){
+    S.answers[item.q.id] = i;
+    btns[i].classList.add('sel');
+    setTimeout(next, 200);
+
+  } else if (item.t === 'mbti'){
+    S.mbti[item.q.k] += (i === 0 ? 1 : -1);
+    btns[i].classList.add('sel');
+    setTimeout(next, 200);
+
+  } else {
+    const right = (i === item.q.her);
+    if (right){
+      /* 猜对才亮出她的选择 */
+      btns[i].classList.add('right');
+      S.correct++;
+      revealTiles(TILES_PER_HIT);
+      toast('猜对了 · 她又亮了一块');
+    } else {
+      /* 猜错不揭晓，只标红他选的，悬念留给结算页 */
+      btns[i].classList.add('wrong');
+      toast('不是这个 · 她已经记下来了');
+    }
+    setTimeout(next, 950);
+  }
+}
+
+function next(){
+  answerLocked = false;
+  S.idx++;
+  save();
+  if (S.idx >= QUEUE.length) renderResult();
+  else renderQ();
+}
+
+/* =========================================================
+   15. 结果页
+   ========================================================= */
+function renderResult(){
+  if (!S.bonus){ revealTiles(BONUS_TILES); S.bonus = true; save(); }
+
+  const r    = calc();
+  const nick = (S.profile && S.profile.name) ? S.profile.name : '你';
+  const cap  = S.unlocked
+    ? '全部解开'
+    : '猜对 ' + S.correct + ' 题，已解开 ' + S.revealed.length + ' / ' + TILES + ' 格';
+
+  const html = [
+    heroHTML(r, nick),
+    conclHTML(r),
+    '<div class="sec-t">她的照片</div>',
+    photoHTML(0, cap, true),
+    '<div class="sec-t">前 ' + FREE_COUNT + ' 题 · 她怎么选的</div>',
+    CONFIG.compat.slice(0, FREE_COUNT).map(function(q){
+      return cmpCard(q, S.answers[q.id]);
+    }).join(''),
+    S.unlocked ? unlockedHTML(r) : lockHTML()
+  ].join('');
+
+  $('#resultBody').innerHTML = html;
+  go('s-result');
+
+  const pm = document.getElementById('photoMain');
+  if (pm) pm.appendChild(buildMosaic());
+
+  attachImgFallback();
+  bindResult(r);
+}
+
+function bindResult(r){
+  const lockedCard = document.getElementById('locked');
+  if (lockedCard){
+    lockedCard.addEventListener('click', function(e){
+      if (e.target && e.target.id === 'btn-soft'){
+        toast('那……她还在等你');
+        return;
+      }
+      openModal();
+    });
+  }
+
+  const share = document.getElementById('btn-share');
+  if (share) share.addEventListener('click', function(){
+    const txt =
+      (S.profile && S.profile.name ? S.profile.name : '我') + ' × ' + CONFIG.girlName +
+      '\n契合度 ' + r.overall +
+      '\n三观 ' + Math.round(r.viewS) +
+      ' / 性格 ' + Math.round(r.personS) +
+      ' / 日常 ' + Math.round(r.habitS) +
+      '\n我是 ' + r.mineMbti + '，她是 ' + r.herMbti +
+      '\n磨合难度：' + r.diffLevel;
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(
+        function(){ toast('已复制，去发给她吧'); },
+        function(){ toast('长按屏幕复制吧'); }
+      );
+    } else {
+      toast('长按屏幕复制吧');
+    }
+  });
+
+  const reset = document.getElementById('btn-reset');
+  if (reset) reset.addEventListener('click', function(){
+    if (!confirm('清空所有答题记录，重新开始？')) return;
+    try{
+      localStorage.removeItem(KEY);
+      localStorage.removeItem(FIRST_OPEN);
+    }catch(e){}
+    location.reload();
+  });
+}
+
+/* =========================================================
+   16. 弹窗
+   ========================================================= */
+let lastFocused = null;
+
+function openModal(){
+  lastFocused = document.activeElement;
+
+  const box = $('#qrBox');
+  box.innerHTML = CONFIG.qrImage
+    ? '<img src="' + CONFIG.qrImage + '" alt="收款码">'
+    : '收款码放这里<br><small>CONFIG.qrImage</small>';
+  attachImgFallback();
+
+  $('#modalPrice').textContent = CONFIG.price;
+
+  const tip = $('#spentTip');
+  if (tip){
+    tip.textContent = '你从打开这份问卷到现在，已经过了 ' +
+      elapsedMinutes() + ' 分钟。就差这 30 秒。';
+  }
+
+  $('#passErr').textContent = '';
+  $('#passInput').value = '';
+
+  const modal = $('#modal');
+  modal.classList.add('on');
+  modal.setAttribute('aria-hidden', 'false');
+
+  setTimeout(function(){ $('#passInput').focus(); }, 120);
+}
+
+function closeModal(){
+  const modal = $('#modal');
+  modal.classList.remove('on');
+  modal.setAttribute('aria-hidden', 'true');
+  if (lastFocused && lastFocused.focus) lastFocused.focus();
+}
+
+function trapFocus(e){
+  const f = $$('#sheet button, #sheet input, #sheet [href]')
+    .filter(function(el){ return !el.disabled && el.offsetParent !== null; });
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first){
+    e.preventDefault(); last.focus();
+  } else if (!e.shiftKey && document.activeElement === last){
+    e.preventDefault(); first.focus();
+  }
+}
+
+function doUnlock(){
+  const v = $('#passInput').value;
+  if (checkPass(v)){
+    S.unlocked = true;
+    S.revealed = Array.from({length:TILES}, function(_, i){ return i; });
+    save();
+    closeModal();
+    renderResult();
+    toast('解锁成功');
+    const target = document.getElementById('unlocked');
+    if (target){
+      setTimeout(function(){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 260);
+    }
+  } else {
+    const sheet = $('#sheet');
+    sheet.classList.remove('shake');
+    void sheet.offsetWidth;
+    sheet.classList.add('shake');
+    $('#passErr').textContent = '口令不对——她可能还没看到你的转账，问一句就好';
+  }
+}
+
+/* =========================================================
+   17. 启动
+   ========================================================= */
+function boot(){
+  buildQueue();
+  markFirstOpen();
+  loadState();
+
+  $('#coverCount').textContent = QUEUE.length;
+  $('#coverMeta').textContent  =
+    QUEUE.length + ' 题 · 约 ' + estimateMinutes() + ' 分钟 · 答完即出报告';
+  $('#modalPrice').textContent = CONFIG.price;
+
+  if (S.idx >= QUEUE.length){ renderResult(); return; }
+
+  const startBtn = $('#btn-start');
+  if (S.idx > 0){
+    startBtn.textContent = '继续答题';
+    startBtn.addEventListener('click', renderQ);
+  } else {
+    startBtn.addEventListener('click', function(){ go('s-profile'); });
+  }
+}
+
+/* ---- 事件绑定 ---- */
+$('#btn-profile').addEventListener('click', function(){
+  const name  = $('#in-name').value.trim();
+  const birth = $('#in-birth').value;
+  if (!name){ toast('先留个称呼'); return; }
+  if (!birth){ toast('生日要填，不然算不了星座'); return; }
+  S.profile = {name:name, birth:birth};
+  save();
+  renderQ();
+});
+
+$('#btn-close').addEventListener('click', closeModal);
+$('#btn-unlock').addEventListener('click', doUnlock);
+
+$('#modal').addEventListener('click', function(e){
+  if (e.target === $('#modal')) closeModal();
+});
+
+$('#passInput').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') doUnlock();
+});
+
+document.addEventListener('keydown', function(e){
+  if (!$('#modal').classList.contains('on')) return;
+  if (e.key === 'Escape'){ closeModal(); }
+  else if (e.key === 'Tab'){ trapFocus(e); }
+});
+
+/* 生日不能选未来 */
+(function(){
+  const d = new Date();
+  const pad = function(n){ return n < 10 ? '0' + n : '' + n; };
+  $('#in-birth').max = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+})();
+
+boot();
+</script>
+</body>
+</html>
